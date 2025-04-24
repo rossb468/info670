@@ -1,6 +1,6 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, FlatList, SafeAreaView, Button, Alert, Pressable, Switch, TextInput } from 'react-native';
-import { useState, useEffect } from 'react';
+
+import { StyleSheet, Text, View, FlatList, SafeAreaView, Button, Alert, Pressable, TextInput } from 'react-native';
+import { useState } from 'react';
 import uuid from 'react-native-uuid';
 
 const DATA = [
@@ -21,7 +21,6 @@ const DATA = [
 const MyList = props => {
   
   const [data, setList] = useState(DATA)
-  const [selectedItems, setSelectedItems] = useState([])
   const [inputText,setInputText] = useState('')
 
   function handleSubmit(e) {
@@ -53,7 +52,7 @@ const MyList = props => {
     );
   };
 
-  const Item = ({title, id, checked}) => {
+  const Item = ({title, id}) => {
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
@@ -106,6 +105,7 @@ const MyList = props => {
         title="Add Item"
         color="#841584"
         accessibilityLabel="Learn more about this purple button"
+        disabled={inputText.trim() === ''}
       />
       </View>
     </View>
@@ -132,12 +132,6 @@ const styles = StyleSheet.create({
     justifyContent: 'left',
     padding: 10,
   },
-  item: {
-    backgroundColor: '#f9c2ff',
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-  },
   title: {
 	  fontSize: 24
   },
@@ -148,17 +142,6 @@ const styles = StyleSheet.create({
     maxHeight: 60,
   },
 
-switchBox: {
-  width: 30, // Fixed width
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-
-textBox: {
-  width: 270,
-  paddingLeft: 20,
-  justifyContent: 'center',
-},
 textInput: {
   borderColor: 'gray',
   borderWidth: 1,
