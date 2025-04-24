@@ -33,10 +33,25 @@ const MyList = props => {
     setList(newList)
   }
 
-  function handleRemove(id) {
-    const newList = data.filter((item) => item.id !== id);
-    setList(newList);
-  }
+  function showConfirmAlert(id) {
+    Alert.alert(
+      'Delete Item',
+      'Are you sure you want to delete this item?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: () => setList((prevItems) => prevItems.filter((item) => item.id !== id)),
+          style: 'destructive',
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   const Item = ({title, id, checked}) => {
     const [isEnabled, setIsEnabled] = useState(false);
@@ -46,6 +61,7 @@ const MyList = props => {
     <View style={styles.container}>
       <Pressable 
         onPress={() => toggleSwitch()}
+        onLongPress={() => showConfirmAlert(id)}
         style={({ pressed }) => [
           styles.rowItem,
           { backgroundColor: pressed ? '#FFF' : 'white' }
