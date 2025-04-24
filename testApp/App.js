@@ -1,13 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, FlatList, SafeAreaView, Button, Alert } from 'react-native';
+import { StyleSheet, Text, View, FlatList, SafeAreaView, Button, Alert, Pressable, Switch, TextInput } from 'react-native';
 import { useState, useEffect } from 'react';
 import uuid from 'react-native-uuid';
-
-const Item = ({title}) => (
-  <View style={styles.item}>
-    <Text style={styles.title}>{title}</Text>
-  </View>
-);
 
 const DATA = [
   {
@@ -25,16 +19,50 @@ const DATA = [
 ];
 
 const MyList = props => {
+  
   const [data, setList] = useState(DATA)
+  const [selectedItems, setSelectedItems] = useState([])
+  const [inputText,setInputText] = useState('')
 
   function handleSubmit(e) {
     const newList = data.concat({
       id: uuid.v4(),
-      title: "New Item"
+      title: inputText
     });
 
     setList(newList)
   }
+
+  function handleRemove(id) {
+    const newList = data.filter((item) => item.id !== id);
+    setList(newList);
+  }
+
+  const Item = ({title, id, checked}) => {
+    const [isEnabled, setIsEnabled] = useState(false);
+    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+
+    return (
+    <View style={styles.container}>
+      <Pressable 
+        onPress={() => toggleSwitch()}
+        style={({ pressed }) => [
+          styles.rowItem,
+          { backgroundColor: pressed ? '#FFF' : 'white' }
+        ]}
+      >
+        <Text style={[
+          styles.title,
+          { color: isEnabled ? '#888' : 'black',
+            textDecorationLine: isEnabled ? 'line-through' : 'none',
+           }
+          ]}>
+          {title}
+        </Text>
+      </Pressable>
+    </View>
+    )
+  };
 
   return (
     <View>
@@ -43,16 +71,27 @@ const MyList = props => {
         data={data} 
         keyExtractor={item => item.id}
         renderItem = {
-          ({item}) => <Item title={item.title} />
+          ({item}) => <Item title={item.title} id={item.id} />
           }
+      />
+    <View style={{
+      flexDirection: 'row',
+      alignItems: 'center'
+    }}>
+      <TextInput
+        style={styles.textInput}
+        value={inputText}
+        onChangeText={setInputText}
+        placeholder="Todo..."
       />
       <Button
         id="myButton"
         onPress={() => handleSubmit()}
-        title="Learn More"
+        title="Add Item"
         color="#841584"
         accessibilityLabel="Learn more about this purple button"
       />
+      </View>
     </View>
   )
 }
@@ -74,7 +113,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'left',
+    padding: 10,
   },
   item: {
     backgroundColor: '#f9c2ff',
@@ -83,6 +123,35 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   title: {
-	  fontSize: 32
-  }
+	  fontSize: 24
+  },
+  rowItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    maxHeight: 60,
+  },
+
+switchBox: {
+  width: 30, // Fixed width
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+
+textBox: {
+  width: 270,
+  paddingLeft: 20,
+  justifyContent: 'center',
+},
+textInput: {
+  borderColor: 'gray',
+  borderWidth: 1,
+  borderRadius: 8,
+  fontSize: 18,
+  width: 270,
+  paddingLeft: 5,
+  paddingTop: 5,
+  paddingBottom: 5,
+  justifyContent: 'center',
+},
 });
