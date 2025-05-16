@@ -47,27 +47,27 @@ export default function DetailScreen({ route }) {
 
   return (
     <SafeAreaView style={styles.container}>
-    <Image
-      source={imageMap[imageKey]}
-      style={{
-        width: imageDimensions.width,
-        height: imageDimensions.height,
-      }}
-      resizeMode='contain'
-    />
-  <View>
-    <Text style={styles.title}>{title}</Text>
-    <Text>Posted by {author} ({authorLocation}) on {date}</Text>
-    <Text>{description}</Text>
-      <Text>{category}</Text>
-      <View>
-        <Text>{speed}</Text>
-        <Text>{fStop}</Text>
-        <Text>{filmSpeed}</Text>
-        <Text>{apature}</Text>
-    </View>
-  </View>
-  </SafeAreaView>
+      <Image
+        source={imageMap[imageKey]}
+        style={{
+          width: imageDimensions.width,
+          height: imageDimensions.height,
+        }}
+        resizeMode='contain'
+      />
+      <View style={styles.details}>
+        <Text style={[styles.title, styles.text]}>{title}</Text>
+        <Text style={styles.text}>Posted by {author} ({authorLocation}) on {date}</Text>
+        <Text style={[styles.text, {marginTop: 8}, {fontStyle: 'italic'}]}>{description}</Text>
+        <Text style={[styles.text, {marginTop: 8}]}>{category}</Text>
+        <View style={styles.metadata}>
+          <Text style={styles.text}>{speed}</Text>
+          <Text style={styles.text}>{fStop}</Text>
+          <Text style={styles.text}>{filmSpeed}</Text>
+          <Text style={styles.text}>{apature}</Text>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -75,7 +75,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     overflow: 'hidden',
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
+    backgroundColor: 'EAEAEA',
   },
 
   title: {
@@ -83,6 +84,31 @@ const styles = StyleSheet.create({
     fontFamily: "System",
     fontWeight: 'light',
     marginBottom: 8,
-    marginLeft: 8
+    color: '#5E5E5C'
+  },
+
+  details: {
+    marginTop: 8,
+    marginLeft: 8,
+    marginRgith: 8,
+    padding: 8,
+    backgroundColor: '#F4F4F4',
+
+    borderRadius: 10,
+
+    shadowColor: '#000',
+    shadowOffset: {width: 1, height: 2},
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+
+    elevation: 5
+  },
+
+  text: {
+    color: '#888886', // or any color you want
+  },
+
+  metadata: {
+    marginTop: 8
   },
 });

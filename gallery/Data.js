@@ -6,7 +6,7 @@ export default DATA = [
   {
     id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
     title: 'Double Oak Leaf',
-    description: "Playing around with photo of an emerging Oak Leaf, creating a double exposure.",
+    description: '"Playing around with photo of an emerging Oak Leaf, creating a double exposure."',
     author: "Anita",
     authorLocation: "West Nottingham, Pennsylvania, United States",
     date: "27 April 2025",
@@ -21,7 +21,7 @@ export default DATA = [
   {
     id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
     title: 'Double Oak Leaf',
-    description: "Playing around with photo of an emerging Oak Leaf, creating a double exposure.",
+description: '"Playing around with photo of an emerging Oak Leaf, creating a double exposure."',
     author: "Anita",
     authorLocation: "West Nottingham, Pennsylvania, United States",
     date: "27 April 2025",
@@ -36,7 +36,7 @@ export default DATA = [
   {
     id: '58694a0f-3da1-471f-bd96-145571e29d72',
     title: 'Double Oak Leaf',
-    description: "Playing around with photo of an emerging Oak Leaf, creating a double exposure.",
+description: '"Playing around with photo of an emerging Oak Leaf, creating a double exposure."',
     author: "Anita",
     authorLocation: "West Nottingham, Pennsylvania, United States",
     date: "27 April 2025",
