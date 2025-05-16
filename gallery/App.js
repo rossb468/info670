@@ -1,63 +1,20 @@
-
-import { StyleSheet, Text, View, FlatList, SafeAreaView, Button, Alert, Pressable, TextInput } from 'react-native';
 import { useState } from 'react';
-import uuid from 'react-native-uuid';
-import MyList from './MyList'
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './HomeScreen'
+import DetailScreen from './DetailScreen'
 
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First Item',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Second Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    title: 'Third Item',
-  },
-];
+const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [data, setList] = useState(DATA)
 
   return (
-      <SafeAreaView style={styles.container}>
-        <MyList data={DATA} />
-      </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName='Home'>
+        <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: true}} />
+        <Stack.Screen name="Detail" component={DetailScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-   mainList: {
-    flex: 1
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'left',
-    padding: 10,
-  },
-  title: {
-	  fontSize: 24
-  },
-  rowItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    maxHeight: 60,
-  },
-
-textInput: {
-  borderColor: 'gray',
-  borderWidth: 1,
-  borderRadius: 8,
-  fontSize: 18,
-  width: 270,
-  paddingLeft: 5,
-  paddingTop: 5,
-  paddingBottom: 5,
-  justifyContent: 'center',
-},
-});
