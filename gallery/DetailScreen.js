@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, Image, StyleSheet, SafeAreaView, Dimensions, useWindowDimensions} from 'react-native';
+import { Alert, View, Text, Image, StyleSheet, SafeAreaView, Dimensions, useWindowDimensions} from 'react-native';
 import { imageMap } from './Data';
 
 export default function DetailScreen({ route }) {
@@ -32,6 +32,8 @@ export default function DetailScreen({ route }) {
       const imageHeight = screenWidth / aspectRatio;
 
       setImageDimensions({width: imageWidth, height: imageHeight});
+
+      Alert.alert(screenWidth.toString())
     }
   }
 

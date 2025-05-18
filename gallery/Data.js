@@ -1,4 +1,5 @@
 export const imageMap = {
+  'profile': require('./assets/profile.jpg'),
   'oakLeaf': require('./assets/oakLeaf.jpg')
 }
 
