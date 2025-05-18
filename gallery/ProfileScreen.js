@@ -1,11 +1,16 @@
 import React, {useState, useEffect} from 'react';
-import { Alert, View, Text, Image, StyleSheet, SafeAreaView, Dimensions, useWindowDimensions, ScrollView} from 'react-native';
-import { imageMap } from './Data';
+import { Alert, Button, TextInput, TouchableOpacity, View, Text, Image, StyleSheet, SafeAreaView, Dimensions, useWindowDimensions, ScrollView} from 'react-native';
+import { imageMap, profile } from './Data';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProfileScreen({ route }) {
 
   const { width: screenWidth } = useWindowDimensions();
   const [imageDimensions, setImageDimensions] = useState(50,50);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [bio, setBio] = useState(profile['bio']);
+  const [storedBio, setStoredBio] = useState("");
 
   const calculateImageSize = () => {
     const imageSource = imageMap['profile'];
@@ -21,6 +26,15 @@ export default function ProfileScreen({ route }) {
   }
 
   useEffect(() => {
+    const loadBio = async () => {
+      const loadedBio = await AsyncStorage.getItem('bio');
+      if (loadedBio !== null) {
+        setBio(bio);
+        setStoredBio(bio);
+      }
+    };
+    loadBio();
+
     calculateImageSize();
 
     // This is supposed to resize the image when the device orientation changes, but
@@ -29,6 +43,14 @@ export default function ProfileScreen({ route }) {
 
     return () => subscription?.remove();
   }, [screenWidth, 'profile']);
+
+  const handleDone = async () => {
+    if (bio !== storedBio) {
+      await AsyncStorage.setItem('bio', bio);
+      setStoredBio(bio);
+    }
+    setIsEditing(false);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -45,11 +67,29 @@ export default function ProfileScreen({ route }) {
         </View>
       <View style={styles.details}>
         <Text style={styles.title}>Anita Bower</Text>
-        <Text style={styles.text}>I began this photoblog in November 2007 to encourage myself to take photos on a regular basis. It has worked better than I hoped.</Text>
-        <Text style={[styles.text, {marginTop: 8}]}>Taking photos opens up the world to me, allowing me to see what's around me in new ways. Sometimes the new discovery is made as I take the photo, and sometimes when I see the photo on my monitor. This photoblog allows me to share these discoveries with you.</Text>
-        <Text style={[styles.text, {marginTop: 8}]}>My goals are to continue to see the world better, become a more proficient photographer, share my photos with others, and enjoy the whole process. :-)</Text>
-      
-        <Text style={styles.title}>Photography Equipment</Text>
+          {isEditing ? (
+            <TextInput
+              style={[styles.text, { borderWidth: 1, borderColor: '#ccc', padding: 6, borderRadius: 4, minWidth: 200 }]}
+              value={bio}
+              onChangeText={setBio}
+              multiline
+              autoFocus
+              onBlur={handleDone}
+            />
+          ) : (
+            <Text style={styles.text}>{bio}</Text>
+          )}
+
+        <TouchableOpacity style={{ width: '100%', alignSelf: 'flex-start' }}>
+          <Text
+            style={{ color: '#007AFF', fontSize: 16, marginTop: 2 }}
+            onPress={isEditing ? handleDone : () => setIsEditing(true)}
+          >
+            {isEditing ? 'Done' : 'Edit'}
+          </Text>
+        </TouchableOpacity>
+            
+        <Text style={[styles.title, {marginTop: 16}]}>Photography Equipment</Text>
         <Text style={styles.text}>Nikon D300</Text>
         <Text style={styles.text}>Sigma 105mm 2.8 DGMacro lens</Text>
         <Text style={styles.text}>Nikon f1.8 50mm</Text>
@@ -57,6 +97,8 @@ export default function ProfileScreen({ route }) {
         <Text style={styles.text}>Elements 10</Text>
         <Text style={styles.text}>Topaz Adjust, Topaz DeNoise, Topaz Simplify, Topaz Details</Text>
         <Text style={styles.text}>Color Effex Pro 2; Viveza 2</Text>
+
+        <Text style={[styles.title, {marginTop: 16}]}>App Settings</Text>
       </View>
       </ScrollView>
     </SafeAreaView>

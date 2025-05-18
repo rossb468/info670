@@ -3,6 +3,10 @@ export const imageMap = {
   'oakLeaf': require('./assets/oakLeaf.jpg')
 }
 
+export const profile = {
+  bio: "I began this photoblog in November 2007 to encourage myself to take photos on a regular basis. It has worked better than I hoped.\n\nTaking photos opens up the world to me, allowing me to see what's around me in new ways. Sometimes the new discovery is made as I take the photo, and sometimes when I see the photo on my monitor. This photoblog allows me to share these discoveries with you.\n\nMy goals are to continue to see the world better, become a more proficient photographer, share my photos with others, and enjoy the whole process. :-)"
+}
+
 export default DATA = [
   {
     id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',

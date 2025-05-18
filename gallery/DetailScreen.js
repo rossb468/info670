@@ -32,8 +32,6 @@ export default function DetailScreen({ route }) {
       const imageHeight = screenWidth / aspectRatio;
 
       setImageDimensions({width: imageWidth, height: imageHeight});
-
-      Alert.alert(screenWidth.toString())
     }
   }
 

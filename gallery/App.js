@@ -10,7 +10,6 @@ import ProfileScreen from './ProfileScreen';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [data, setList] = useState(DATA)
 
   return (
     <NavigationContainer>
