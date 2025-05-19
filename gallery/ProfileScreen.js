@@ -12,6 +12,8 @@ export default function ProfileScreen({ route }) {
   const [bio, setBio] = useState(profile['bio']);
   const [storedBio, setStoredBio] = useState("");
 
+  const [selectedOption, setSelectedOption] = useState('option1');
+
   const calculateImageSize = () => {
     const imageSource = imageMap['profile'];
     const source = Image.resolveAssetSource(imageSource);
@@ -26,11 +28,24 @@ export default function ProfileScreen({ route }) {
   }
 
   useEffect(() => {
+  const loadOption = async () => {
+      const stored = await AsyncStorage.getItem('radioOption');
+      if (stored) setSelectedOption(stored);
+    };
+    loadOption();
+  }, []);
+
+  const handleRadioChange = async (value) => {
+    setSelectedOption(value);
+    await AsyncStorage.setItem('radioOption', value);
+  };
+
+  useEffect(() => {
     const loadBio = async () => {
       const loadedBio = await AsyncStorage.getItem('bio');
       if (loadedBio !== null) {
-        setBio(bio);
-        setStoredBio(bio);
+        setBio(loadedBio);
+        setStoredBio(loadedBio);
       }
     };
     loadBio();
@@ -85,7 +100,7 @@ export default function ProfileScreen({ route }) {
             style={{ color: '#007AFF', fontSize: 16, marginTop: 2 }}
             onPress={isEditing ? handleDone : () => setIsEditing(true)}
           >
-            {isEditing ? 'Done' : 'Edit'}
+            {isEditing ? 'Save' : 'Edit'}
           </Text>
         </TouchableOpacity>
             
@@ -99,6 +114,41 @@ export default function ProfileScreen({ route }) {
         <Text style={styles.text}>Color Effex Pro 2; Viveza 2</Text>
 
         <Text style={[styles.title, {marginTop: 16}]}>App Settings</Text>
+        <Text style={styles.text}>These don't really do anything, but their state is saved to local storage!</Text>
+        <View style={{ flexDirection: 'row', marginVertical: 16, }}>
+          <TouchableOpacity
+            style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16 }}
+            onPress={() => handleRadioChange('option1')}
+          >
+            <View style={{
+              height: 20, width: 20, borderRadius: 10, borderWidth: 2, borderColor: '#007AFF',
+              alignItems: 'center', justifyContent: 'center', marginRight: 6
+            }}>
+              {selectedOption === 'option1' && (
+                <View style={{
+                  height: 10, width: 10, borderRadius: 5, backgroundColor: '#007AFF'
+                }} />
+              )}
+            </View>
+            <Text>Option 1</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{ flexDirection: 'row', alignItems: 'center' }}
+            onPress={() => handleRadioChange('option2')}
+          >
+            <View style={{
+              height: 20, width: 20, borderRadius: 10, borderWidth: 2, borderColor: '#007AFF',
+              alignItems: 'center', justifyContent: 'center', marginRight: 6
+            }}>
+              {selectedOption === 'option2' && (
+                <View style={{
+                  height: 10, width: 10, borderRadius: 5, backgroundColor: '#007AFF'
+                }} />
+              )}
+            </View>
+            <Text>Option 2</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       </ScrollView>
     </SafeAreaView>
