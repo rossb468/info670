@@ -10,6 +10,7 @@ export default styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'left',
+    marginBottom: 20,
   },
   title: {
 	  fontSize: 24,

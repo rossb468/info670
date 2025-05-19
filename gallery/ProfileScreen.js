@@ -115,35 +115,19 @@ export default function ProfileScreen({ route }) {
 
         <Text style={[styles.title, {marginTop: 16}]}>App Settings</Text>
         <Text style={styles.text}>These don't really do anything, but their state is saved to local storage!</Text>
-        <View style={{ flexDirection: 'row', marginVertical: 16, }}>
-          <TouchableOpacity
-            style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16 }}
-            onPress={() => handleRadioChange('option1')}
-          >
-            <View style={{
-              height: 20, width: 20, borderRadius: 10, borderWidth: 2, borderColor: '#007AFF',
-              alignItems: 'center', justifyContent: 'center', marginRight: 6
-            }}>
+        <View style={styles.radioRow}>
+          <TouchableOpacity style={styles.radioOption} onPress={() => handleRadioChange('option1')}>
+            <View style={styles.radioCircleOuter}>
               {selectedOption === 'option1' && (
-                <View style={{
-                  height: 10, width: 10, borderRadius: 5, backgroundColor: '#007AFF'
-                }} />
+                <View style={styles.radioCircleInner} />
               )}
             </View>
             <Text>Option 1</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={{ flexDirection: 'row', alignItems: 'center' }}
-            onPress={() => handleRadioChange('option2')}
-          >
-            <View style={{
-              height: 20, width: 20, borderRadius: 10, borderWidth: 2, borderColor: '#007AFF',
-              alignItems: 'center', justifyContent: 'center', marginRight: 6
-            }}>
+          <TouchableOpacity style={styles.radioOption} onPress={() => handleRadioChange('option2')}>
+            <View style={styles.radioCircleOuter}>
               {selectedOption === 'option2' && (
-                <View style={{
-                  height: 10, width: 10, borderRadius: 5, backgroundColor: '#007AFF'
-                }} />
+                <View style={styles.radioCircleInner} />
               )}
             </View>
             <Text>Option 2</Text>
@@ -193,5 +177,34 @@ const styles = StyleSheet.create({
 
   metadata: {
     marginTop: 8
+  },
+
+  radioRow: {
+    flexDirection: 'row',
+    marginVertical: 16,
+  },
+
+  radioOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+
+  radioCircleOuter: {
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#007AFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 6,
+  },
+  
+  radioCircleInner: {
+    height: 10,
+    width: 10,
+    borderRadius: 5,
+    backgroundColor: '#007AFF',
   },
 });

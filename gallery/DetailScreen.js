@@ -57,9 +57,9 @@ export default function DetailScreen({ route }) {
       />
       <View style={styles.details}>
         <Text style={[styles.title, styles.text]}>{title}</Text>
-        <Text style={styles.text}>Posted by {author} ({authorLocation}) on {date}</Text>
-        <Text style={[styles.text, {marginTop: 8}, {fontStyle: 'italic'}]}>{description}</Text>
-        <Text style={[styles.text, {marginTop: 8}]}>{category}</Text>
+        <Text style={[styles.text, {fontStyle: 'italic'}]}>Posted by {author} ({authorLocation}) on {date}</Text>
+        <Text style={[styles.text, {marginTop: 8}]}>{description}</Text>
+        <Text style={[styles.text, {marginTop: 8}, {fontStyle: 'italic'}]}>{category}</Text>
         <View style={styles.metadata}>
           <Text style={styles.text}>{speed}</Text>
           <Text style={styles.text}>{fStop}</Text>
