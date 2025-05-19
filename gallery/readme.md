@@ -7,6 +7,6 @@ A profile button is visible in the top right corner on all screens. Tapping this
 
 Additionally on the profile page are two radio buttons. They serve no purpose, but their state is saved to local storage.
 
-![Screenshot 1](screenshot1.png)
-![Screenshot 2](screenshot2.png)
-![Screenshot 3](screenshot3.png)
+<img src="screenshot1.png" alt="Screenshot 1" width="300"/>
+<img src="screenshot2.png" alt="Screenshot 2" width="300"/>
+<img src="screenshot3.png" alt="Screenshot 3" width="300"/>
