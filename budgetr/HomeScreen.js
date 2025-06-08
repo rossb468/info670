@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
 import { fetchTransactions, postTransaction } from './API';
 import InputControl from './InputControl'
+import { InteractionManager } from 'react-native';
 
 const STORAGE_KEY = 'transactions';
 const today = new Date();
@@ -36,10 +37,6 @@ function sortTransactions(transactions) {
   });
 }
 
-function handleInputChange(field, value) {
-    setInputs(prev => ({...prev, [field]: value}));
-  }
-
 async function loadData() {
   try {
     const data = await fetchTransactions();
@@ -65,44 +62,25 @@ async function loadData() {
   }
 }
 
-async function handleSubmit() {
-    if (!date.trim() || !description.trim() ||!amount.trim() ||!category.trim()) 
-    {
-      return;
-    }
-
-    const newTransaction = {
-      id: uuid.v4(),
-      date,
-      description,
-      amount,
-      category,
-    }
-
+async function handleSubmit(transaction, setTransactions) {
     try {
-      const result = postTransaction(newTransaction);
-      if(data.status === 'success') {
-        setTransactions(prev => sortTransactions([newTransaction, ...prev]));
+      const response = await postTransaction(transaction);
+      console.log(response);
+      if(response.status === 200) {
+        setTransactions(prev => sortTransactions([transaction, ...prev]));
       }
       else {
-        console.error("Server error", result.message || "Unknown error");
+        console.error("Server error", response.status || "Unknown error");
       }
     }
     catch (error) {
       console.error("Failed to submit transaction:", error);
     }
-    
-    date = getLastUsedDate();
-    description = '';
-    amount = 0;
-    category = '';
-
-    Keyboard.dismiss();
   }
   
 export default function HomeScreen() {
 
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(getLastUsedDate());
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
@@ -117,6 +95,54 @@ export default function HomeScreen() {
   useEffect(() => {
     loadData().then(data => setTransactions(data));
   }, []);
+
+  const createTransactionFromInput = () => {
+    if (!date.trim() || !description.trim() ||!amount.trim() ||!category.trim()) 
+    {
+      return null;
+    }
+
+    return {
+      id: uuid.v4(),
+      date,
+      description,
+      amount,
+      category,
+    }
+  }
+
+  const submitTransaction = () => {
+    const transaction = createTransactionFromInput();
+    if(transaction) {
+      handleSubmit(transaction, setTransactions);
+    }
+    
+    setDate(getLastUsedDate());
+    setDescription('');
+    setAmount(0);
+    setCategory('');
+
+    Keyboard.dismiss();
+  }
+
+  const handleInputChange = (field, value) => {
+    switch (field) {
+      case 'date':
+        setDate(value);
+        break;
+      case 'description':
+        setDescription(value);
+        break;
+      case 'amount':
+        setAmount(value);
+        break;
+      case 'category':
+        setCategory(value);
+        break;
+      default:
+        break;
+    }
+  }
 
   //   var monthTotal = useMemo(() =>  {
   //     if(!transactions.length) return 0;
@@ -165,7 +191,7 @@ export default function HomeScreen() {
           category,
         }}
         onChange={handleInputChange}
-        onSubmit={handleSubmit} />
+        onSubmit={submitTransaction} />
     </SafeAreaView>
   )
 }

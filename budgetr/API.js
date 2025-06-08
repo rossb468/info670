@@ -15,18 +15,18 @@ export async function fetchTransactions() {
 }
 
 export async function postTransaction(transaction) {
-  const newTransaction = { ...transaction, id: uuid.v4() };
-  const response = await fetch(`${API_URL}/addTransaction.php`, {
+    const newTransaction = { ...transaction, id: uuid.v4() };
+    const response = await fetch(`${API_URL}/addTransaction.php`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(newTransaction),
-  });
-  const result = await response.json();
+    });
+    const result = await response.json();
 
-  if (result.status !== 'success') 
+    if (result.status !== 'success') 
     {
         throw new Error(result.message || 'Server error');
     }
 
-  return newTransaction;
+  return response;
 }
