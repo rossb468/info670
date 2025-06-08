@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
 import styles from './Styles'
 import Item from './Item'
-import { FlatList, SafeAreaView, View, Keyboard } from 'react-native';
+import { FlatList, SafeAreaView, View, Keyboard, Text, InteractionManager } from 'react-native';
 import uuid from 'react-native-uuid';
 import { fetchTransactions, postTransaction, deleteTransaction } from './API';
 import InputControl from './InputControl'
@@ -62,7 +62,7 @@ async function loadData() {
 async function handleSubmit(transaction, setTransactions) {
     try {
       const response = await postTransaction(transaction);
-
+      console.log(response);
       if(response.status === 200) {
         setTransactions(prev => sortTransactions([transaction, ...prev]));
       }
@@ -76,6 +76,7 @@ async function handleSubmit(transaction, setTransactions) {
   }
 
 async function handleDelete(transaction, setTransactions) {
+  console.log(transaction);
   try {
     const response = await deleteTransaction(transaction.id);
 
@@ -106,7 +107,15 @@ export default function HomeScreen() {
   const flatListRef = useRef();
 
   useEffect(() => {
-    loadData().then(data => setTransactions(data));
+    loadData().then(data => {
+      setTransactions(data);
+
+      InteractionManager.runAfterInteractions(() => {
+        if (descriptionRef.current) {
+          descriptionRef.current.focus();
+        }
+      });
+    });
   }, []);
 
   const createTransactionFromInput = () => {
@@ -127,15 +136,18 @@ export default function HomeScreen() {
   const submitTransaction = () => {
     const transaction = createTransactionFromInput();
     if(transaction) {
-      handleSubmit(transaction, setTransactions);
-    }
-    
-    setDate(getLastUsedDate());
-    setDescription('');
-    setAmount(0);
-    setCategory('');
+      handleSubmit(transaction, setTransactions).then(() => {
 
-    Keyboard.dismiss();
+      setDate(getLastUsedDate());
+      setDescription('');
+      setAmount(0);
+      setCategory('');
+
+      if (descriptionRef.current) {
+        descriptionRef.current.focus();
+      }
+      })
+    }
   }
 
   const handleInputChange = (field, value) => {
@@ -189,6 +201,15 @@ export default function HomeScreen() {
         data={transactions} 
         keyExtractor={item => item.id}
         renderItem={({item}) => <Item item={item} deleteHandler={handleDeleteExposed} />}
+        stickyHeaderIndicies={[0]}
+        ListHeaderComponent={() => (
+          <View style={styles.itemRow}>
+            <Text style={{flex: 1}}>Date</Text>
+            <Text style={{flex: 2}}>Description</Text>
+            <Text style={{flex: 1}}>Category</Text>
+            <Text style={{flex: 1}}>Amount</Text>
+          </View>
+        )}
       />
       <View style={{
         backgroundColor: '#fff',

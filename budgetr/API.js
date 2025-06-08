@@ -15,11 +15,10 @@ export async function fetchTransactions() {
 }
 
 export async function postTransaction(transaction) {
-    const newTransaction = { ...transaction, id: uuid.v4() };
     const response = await fetch(`${API_URL}/addTransaction.php`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(newTransaction),
+    body: JSON.stringify(transaction),
     });
     const result = await response.json();
 

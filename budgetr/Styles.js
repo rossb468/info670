@@ -34,5 +34,11 @@ export default styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 4,
     padding: 8
-  }
+  },
+  itemRow: {
+  flexDirection: 'row',
+  padding: 10,
+  justifyContent: 'space-between',
+  backgroundColor: '#eee'
+  },
 });

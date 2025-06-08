@@ -16,31 +16,7 @@ export default function App() {
       <Stack.Navigator initialRouteName='Home'>
         <Stack.Screen name="Home" component={HomeScreen}
          options={({ navigation }) => ({
-          headerShown: true, 
-          headerRight: () => (
-            <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} onPress={() => navigation.navigate('Profile')}>
-              <Ionicons name="person-circle-outline" size={24} color="#007AFF" />
-              <Text style={{ fontSize: 16, color: '#007AFF', marginLeft: 4 }}>Profile</Text>
-            </TouchableOpacity>
-        )})} />
-        <Stack.Screen name="Detail" component={DetailScreen} 
-          options={({ navigation }) => ({
-          headerShown: true, 
-          headerRight: () => (
-            <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} onPress={() => navigation.navigate('Profile')}>
-              <Ionicons name="person-circle-outline" size={24} color="#007AFF" />
-              <Text style={{ fontSize: 16, color: '#007AFF', marginLeft: 4 }}>Profile</Text>
-            </TouchableOpacity>
-        )})} />
-        <Stack.Screen name="Profile" component={ProfileScreen} 
-            options={({ navigation }) => ({
-            headerShown: true,
-            presentation: 'modal',
-            headerRight: () => (
-              <TouchableOpacity style={{ marginLeft: 16 }} onPress={() => navigation.goBack()}>
-                <Text style={{ fontSize: 16, color: '#007AFF' }}>Done</Text>
-              </TouchableOpacity>
-            )})} />
+          headerShown: true })} />
       </Stack.Navigator>
     </NavigationContainer>
   );
