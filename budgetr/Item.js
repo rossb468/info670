@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, Pressable, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from './Styles'
-import { imageMap } from './Data'
 
 export default function Item ({ item, deleteHandler }) {
   const navigation = useNavigation();
@@ -16,7 +15,7 @@ export default function Item ({ item, deleteHandler }) {
       onPress={() => {
         Alert.alert(
           "Delete Transaction",
-          "Are you sure you want to delete this item?",
+          "Are you sure you want to delete this transaction?",
             [
               { text: "Cancel", style: "cancel" },
               { text: "Delete", style: "destructive", 
