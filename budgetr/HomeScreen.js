@@ -1,13 +1,10 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import styles from './Styles'
-import data from './Data'
 import Item from './Item'
-import { FlatList, SafeAreaView, View, TextInput, Keyboard, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FlatList, SafeAreaView, View, Keyboard } from 'react-native';
 import uuid from 'react-native-uuid';
-import { fetchTransactions, postTransaction } from './API';
+import { fetchTransactions, postTransaction, deleteTransaction } from './API';
 import InputControl from './InputControl'
-import { InteractionManager } from 'react-native';
 
 const STORAGE_KEY = 'transactions';
 const today = new Date();
@@ -65,7 +62,7 @@ async function loadData() {
 async function handleSubmit(transaction, setTransactions) {
     try {
       const response = await postTransaction(transaction);
-      console.log(response);
+
       if(response.status === 200) {
         setTransactions(prev => sortTransactions([transaction, ...prev]));
       }
@@ -77,6 +74,22 @@ async function handleSubmit(transaction, setTransactions) {
       console.error("Failed to submit transaction:", error);
     }
   }
+
+async function handleDelete(transaction, setTransactions) {
+  try {
+    const response = await deleteTransaction(transaction.id);
+
+    if(response.status === 200) {
+      setTransactions(prev => prev.filter(t => t.id !== transaction.id));
+    }
+    else {
+      console.error("Server error:", response.message || "Unknown error");
+    }
+  }
+  catch (error) {
+    console.error("Failed to delete transaction:", error);
+  }
+}
   
 export default function HomeScreen() {
 
@@ -144,6 +157,10 @@ export default function HomeScreen() {
     }
   }
 
+  const handleDeleteExposed = (transaction) => {
+    handleDelete(transaction, setTransactions);
+  }
+
   //   var monthTotal = useMemo(() =>  {
   //     if(!transactions.length) return 0;
 
@@ -171,7 +188,7 @@ export default function HomeScreen() {
         style={styles.mainList}
         data={transactions} 
         keyExtractor={item => item.id}
-        renderItem={({item}) => <Item item={item} />}
+        renderItem={({item}) => <Item item={item} deleteHandler={handleDeleteExposed} />}
       />
       <View style={{
         backgroundColor: '#fff',

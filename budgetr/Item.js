@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import styles from './Styles'
 import { imageMap } from './Data'
 
-export default function Item ({ item }) {
+export default function Item ({ item, deleteHandler }) {
   const navigation = useNavigation();
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
@@ -13,7 +13,17 @@ export default function Item ({ item }) {
   return (
     <View style={styles.container}>
       <Pressable 
-        onPress={navigateToDetail}
+      onPress={() => {
+        Alert.alert(
+          "Delete Transaction",
+          "Are you sure you want to delete this item?",
+            [
+              { text: "Cancel", style: "cancel" },
+              { text: "Delete", style: "destructive", 
+                onPress: () => deleteHandler(item) }
+            ]
+          );
+        }}
         style={({ pressed }) => [
           styles.rowItem,
         ]}>

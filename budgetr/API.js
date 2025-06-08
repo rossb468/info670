@@ -30,3 +30,20 @@ export async function postTransaction(transaction) {
 
   return response;
 }
+
+
+export async function deleteTransaction(id) {
+  const response = await fetch(`${API_URL}/deleteTransaction.php`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id })
+  });
+
+  const result = await response.json();
+
+  if (result.status !== 'success') {
+    throw new Error(result.message || 'Failed to delete transaction');
+  }
+
+  return response;
+}
