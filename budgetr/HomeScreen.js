@@ -110,6 +110,7 @@ export default function HomeScreen() {
   const [category, setCategory] = useState('');
 
   const [transactions, setTransactions] = useState([]);
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
 
   const descriptionRef = useRef();
   const amountRef = useRef();
@@ -194,6 +195,42 @@ export default function HomeScreen() {
     handleDelete(transaction, setTransactions);
   }
 
+  function applyDateFilter(range, allTransactions) {
+    const now = new Date();
+    let startDate = null;
+
+    switch (range) {
+      case '7days':
+        startDate = new Date(now);
+        startDate.setDate(now.getDate() - 7);
+        break;
+      case '30days':
+        startDate = new Date(now);
+        startDate.setDate(now.getDate() - 30);
+        break;
+      case 'week': {
+        const day = now.getDay();
+        startDate = new Date(now);
+        startDate.setDate(now.getDate() - day);
+        startDate.setHours(0, 0, 0, 0);
+        break;
+      }
+      case 'month':
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        break;
+      case 'all':
+      default:
+        setFilteredTransactions(allTransactions);
+        return;
+    }
+
+    setFilteredTransactions(filterTransactionsByDateRange(allTransactions, startDate, now));
+  }
+
+  useEffect(() => {
+    applyDateFilter(pickerRange, transactions);
+  }, [pickerRange, transactions]);
+
   //   var monthTotal = useMemo(() =>  {
   //     if(!transactions.length) return 0;
 
@@ -219,7 +256,7 @@ export default function HomeScreen() {
       <FlatList
         ref={flatListRef}
         style={styles.mainList}
-        data={transactions} 
+        data={filteredTransactions}
         keyExtractor={item => item.id}
         renderItem={({item}) => <Item item={item} deleteHandler={handleDeleteExposed} />}
         stickyHeaderIndicies={[0]}
