@@ -118,14 +118,20 @@ export default function HomeScreen() {
   const categoryRef = useRef();
   const flatListRef = useRef();
 
-  const [pickerRange, setRange] = useState('all');
-  const [pickerOpen, setOpen] = useState(false);
-  const [pickerItems, setItems] = useState([
+  const [datePickerRange, setDatePickerRange] = useState('all');
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [datePickerItems, setDatePickerItems] = useState([
     { label: 'All', value: 'all' },
     { label: 'Last 7 days', value: '7days' },
     { label: 'Last 30 days', value: '30days' },
     { label: 'Current Week', value: 'week' },
     { label: 'Current Month', value: 'month' },
+  ]);
+
+  const [categoryPickerRange, setCategoryPickerRange] = useState('all');
+  const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
+  const [categoryPickerItems, setCategoryPickerItems] = useState([
+    { label: 'All', value: 'all' },
   ]);
 
 
@@ -158,18 +164,26 @@ export default function HomeScreen() {
 
   const submitTransaction = () => {
     const transaction = createTransactionFromInput();
-    if(transaction) {
+    if (transaction) {
       handleSubmit(transaction, setTransactions).then(() => {
+        const updatedTransactions = sortTransactions([transaction, ...transactions]);
+        setTransactions(updatedTransactions);
 
-      setDate(lastDate);
-      setDescription('');
-      setAmount('');
-      setCategory('');
+        if (flatListRef.current) {
+          flatListRef.current.scrollToEnd({ animated: true });
+        }
 
-      if (descriptionRef.current) {
-        descriptionRef.current.focus();
-      }
-      })
+        setDate(lastDate);
+        setDescription('');
+        setAmount('');
+        setCategory('');
+
+        applyDateFilter(datePickerRange, updatedTransactions);
+
+        if (descriptionRef.current) {
+          descriptionRef.current.focus();
+        }
+      });
     }
   }
 
@@ -227,7 +241,29 @@ export default function HomeScreen() {
     const filtered = startDate ? filterTransactionsByDateRange(allTransactions, startDate, now) : allTransactions;
     setFilteredTransactions(filtered);
 
-    if(filtered.length > 0) {
+    // Convert to set to uniquify list
+    const uniqueCategories = Array.from(new Set(filtered.map(t => t.category))).sort();
+    setCategoryPickerItems([{ label: 'All', value: 'all' }, ...uniqueCategories.map(cat => ({ label: cat, value: cat }))]);
+  
+    if(filtered && filtered.length > 0) {
+      const sum = filtered.reduce((accumulator, t) => {
+      const parsedAmount = parseFloat(t.amount);
+      return accumulator + (isNaN(parsedAmount) ? 0 : parsedAmount); 
+      }, 0)
+      setTransactionSum(sum);
+    }
+
+    return filtered;
+  }
+
+  function applyCategoryFilter(category, transactions) {
+    const filtered = category === 'all'
+      ? transactions
+      : transactions.filter(t => t.category === category);
+
+    setFilteredTransactions(filtered);
+
+    if(filtered && filtered.length > 0) {
       const sum = filtered.reduce((accumulator, t) => {
       const parsedAmount = parseFloat(t.amount);
       return accumulator + (isNaN(parsedAmount) ? 0 : parsedAmount); 
@@ -236,9 +272,11 @@ export default function HomeScreen() {
     }
   }
 
+
   useEffect(() => {
-    applyDateFilter(pickerRange, transactions);
-  }, [pickerRange, transactions]);
+    var filtered = applyDateFilter(datePickerRange, transactions);
+    filtered = applyCategoryFilter(categoryPickerRange, filtered);
+  }, [datePickerRange, categoryPickerRange, transactions]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -248,7 +286,7 @@ export default function HomeScreen() {
         data={filteredTransactions}
         keyExtractor={item => item.id}
         renderItem={({item}) => <Item item={item} deleteHandler={handleDeleteExposed} />}
-        stickyHeaderIndicies={[0]}
+        stickyHeaderIndices={[0]}
         ListHeaderComponent={() => (
           <View style={styles.itemRow}>
             <Text style={{flex: 1}}>Date</Text>
@@ -258,19 +296,33 @@ export default function HomeScreen() {
           </View>
         )}
       />
-      <View style={{paddingVertical: 20, marginTop: 'auto', paddingLeft: 8, paddingRight: 8, width: '100%' }}>
+      <View style={{paddingVertical: 0, marginTop: 'auto', paddingLeft: 8, paddingRight: 8, width: '100%' }}>
+          <View>
+             <Text style={{marginLeft: 10}}>Filter by category</Text>
+            <DropDownPicker
+              open={categoryPickerOpen}
+              value={categoryPickerRange}
+              items={categoryPickerItems}
+              setOpen={setCategoryPickerOpen}
+              setValue={setCategoryPickerRange}
+              setItems={setCategoryPickerItems}
+              dropDownContainerStyle={{ width: 200, marginLeft: 10 }}
+              style={{ marginBottom: 5, marginLeft: 10, width: 200 }}
+            />
+          </View>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <View >
-          <DropDownPicker
-            open={pickerOpen}
-            value={pickerRange}
-            items={pickerItems}
-            setOpen={setOpen}
-            setValue={setRange}
-            setItems={setItems}
-            dropDownContainerStyle={{ width: 200, marginLeft: 10 }}
-            style={{ marginBottom: 5, marginLeft: 10, width: 200 }}
-          />
+          <View>
+            <Text style={{marginLeft: 10}}>Filter by date</Text>
+            <DropDownPicker
+              open={datePickerOpen}
+              value={datePickerRange}
+              items={datePickerItems}
+              setOpen={setDatePickerOpen}
+              setValue={setDatePickerRange}
+              setItems={setDatePickerItems}
+              dropDownContainerStyle={{ width: 200, marginLeft: 10 }}
+              style={{ marginBottom: 5, marginLeft: 10, width: 200 }}
+            />
           </View>
           <View style={{justifyContent: 'center', alignContent: 'flex-end'}}>
             <Text style={{fontSize: 24}}>Total: </Text>
