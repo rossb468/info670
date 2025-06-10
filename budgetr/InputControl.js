@@ -2,6 +2,8 @@ import React from 'react';
 import { View, TextInput, Keyboard } from 'react-native';
 
 export default function InputControl({ styles, refs, values, onChange, onSubmit }) {
+  var lastKeyPress = '';
+
   return (
     <View style={{
       backgroundColor: '#fff',
@@ -11,32 +13,35 @@ export default function InputControl({ styles, refs, values, onChange, onSubmit 
       gap: 8,
     }}>
       <TextInput
-        style={[styles.inputTextStyle, { marginRight: 8 }]}
-        placeholder="Date"
+        style={[styles.inputTextStyle, { marginRight: 0 }]}
+        placeholder="MM/DD"
+        keyboardType="number-pad"
+        maxLength={10}
         value={values.date}
-        onChangeText={text => onChange('date', text)}
+        onKeyPress={({ nativeEvent }) => lastKeyPress = nativeEvent.key}
+        onChangeText={text => {
+          let cleaned = text.replace(/[^\d/]/g, '');
+          onChange('date', cleaned);
+        }}
         returnKeyType="next"
-        onSubmitEditing={() => refs.descriptionRef.current.focus()}
-      />
+        onSubmitEditing={() => refs.descriptionRef.current.focus()} />
       <TextInput
         ref={refs.descriptionRef}
-        style={[styles.inputTextStyle, { marginRight: 8 }]}
+        style={[styles.inputTextStyle, { marginRight: 0 }]}
         placeholder="Description"
         value={values.description}
         onChangeText={text => onChange('description', text)}
         returnKeyType="next"
-        onSubmitEditing={() => refs.amountRef.current.focus()}
-      />
+        onSubmitEditing={() => refs.amountRef.current.focus()} />
       <TextInput
         ref={refs.amountRef}
-        style={[styles.inputTextStyle, { marginRight: 8 }]}
+        style={[styles.inputTextStyle, { marginRight: 0 }]}
         placeholder="Amount"
         keyboardType="numeric"
         value={values.amount}
         onChangeText={text => onChange('amount', text)}
         returnKeyType="next"
-        onSubmitEditing={() => refs.categoryRef.current.focus()}
-      />
+        onSubmitEditing={() => refs.categoryRef.current.focus()} />
       <TextInput
         ref={refs.categoryRef}
         style={styles.inputTextStyle}
@@ -47,8 +52,7 @@ export default function InputControl({ styles, refs, values, onChange, onSubmit 
         onSubmitEditing={() => {
           onSubmit();
           Keyboard.dismiss();
-        }}
-      />
+        }} />
     </View>
   );
 }

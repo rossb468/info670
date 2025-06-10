@@ -7,17 +7,12 @@ import { fetchTransactions, postTransaction, deleteTransaction } from './API';
 import InputControl from './InputControl'
 
 const STORAGE_KEY = 'transactions';
-const today = new Date();
-var lastDate = '';
-
-function getLastUsedDate() {
-  return lastDate.trim() !== '' ? lastDate : today.toLocaleDateString()
-}
+var lastDate = new Date().toLocaleDateString();
 
 function createDefaultTransaction() {
   return {
     id: uuid.v4(),
-    date: getLastUsedDate(),
+    date: lastDate,
     description: '',
     amount: '',
     category: ''
@@ -91,10 +86,24 @@ async function handleDelete(transaction, setTransactions) {
     console.error("Failed to delete transaction:", error);
   }
 }
+
+function filterTransactionsByDateRange(transactions, startDate, endDate) {
+  if (!Array.isArray(transactions) || !startDate || !endDate) return transactions;
+
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  if (isNaN(start) || isNaN(end)) return transactions;
+
+  return transactions.filter(t => {
+    const [m, d, y] = t.date.split('/').map(Number);
+    const tDate = new Date(y, m - 1, d);
+    return tDate >= start && tDate <= end;
+  });
+}
   
 export default function HomeScreen() {
 
-  const [date, setDate] = useState(getLastUsedDate());
+  const [date, setDate] = useState(lastDate);
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
@@ -138,9 +147,9 @@ export default function HomeScreen() {
     if(transaction) {
       handleSubmit(transaction, setTransactions).then(() => {
 
-      setDate(getLastUsedDate());
+      setDate(lastDate);
       setDescription('');
-      setAmount(0);
+      setAmount('');
       setCategory('');
 
       if (descriptionRef.current) {
@@ -211,14 +220,6 @@ export default function HomeScreen() {
           </View>
         )}
       />
-      <View style={{
-        backgroundColor: '#fff',
-        padding: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: 8,
-      }}>
-      </View>
       <InputControl 
         styles={styles} 
         refs={{descriptionRef, amountRef, categoryRef}}
