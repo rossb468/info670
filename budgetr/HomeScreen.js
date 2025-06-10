@@ -111,6 +111,7 @@ export default function HomeScreen() {
 
   const [transactions, setTransactions] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [transactionSum, setTransactionSum] = useState(0);
 
   const descriptionRef = useRef();
   const amountRef = useRef();
@@ -220,36 +221,24 @@ export default function HomeScreen() {
         break;
       case 'all':
       default:
-        setFilteredTransactions(allTransactions);
-        return;
+        break;
     }
 
-    setFilteredTransactions(filterTransactionsByDateRange(allTransactions, startDate, now));
+    const filtered = startDate ? filterTransactionsByDateRange(allTransactions, startDate, now) : allTransactions;
+    setFilteredTransactions(filtered);
+
+    if(filtered.length > 0) {
+      const sum = filtered.reduce((accumulator, t) => {
+      const parsedAmount = parseFloat(t.amount);
+      return accumulator + (isNaN(parsedAmount) ? 0 : parsedAmount); 
+      }, 0)
+      setTransactionSum(sum);
+    }
   }
 
   useEffect(() => {
     applyDateFilter(pickerRange, transactions);
   }, [pickerRange, transactions]);
-
-  //   var monthTotal = useMemo(() =>  {
-  //     if(!transactions.length) return 0;
-
-  //     const mostRecent = transactions[0];
-  //     const [mMonth, mDay, mYear] = mostRecent.date.split('/').map(Number);
-  //     const mostRecentDate = new Date(mYear, mMonth - 1, mDay);
-
-  //     return transactions.reduce((sum, t) => {
-  //       const [tMonth, tDay, tYear] = t.date.split('/').map(Number);
-  //       const tDate = new Date(tYear, tMonth - 1, tDay);
-  //       const diffDays = Math.abs((mostRecentDate - tDate) / (1000 * 60 * 60 * 24));
-  //       if (diffDays <= 30) {
-  //         const amt = parseFloat(t.amount);
-  //         return sum + (isNaN(amt) ? 0 : amt);
-  //       }
-  //       return sum;
-  //     }, 0);
-
-  // }, [transactions]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -269,16 +258,27 @@ export default function HomeScreen() {
           </View>
         )}
       />
-      <View style={{ paddingHorizontal: 10, paddingVertical: 20, marginTop: 'auto' }}>
-        <DropDownPicker
-          open={pickerOpen}
-          value={pickerRange}
-          items={pickerItems}
-          setOpen={setOpen}
-          setValue={setRange}
-          setItems={setItems}
-          style={{ marginBottom: 10 }}
-        />
+      <View style={{paddingVertical: 20, marginTop: 'auto', paddingLeft: 8, paddingRight: 8, width: '100%' }}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View >
+          <DropDownPicker
+            open={pickerOpen}
+            value={pickerRange}
+            items={pickerItems}
+            setOpen={setOpen}
+            setValue={setRange}
+            setItems={setItems}
+            dropDownContainerStyle={{ width: 200, marginLeft: 10 }}
+            style={{ marginBottom: 5, marginLeft: 10, width: 200 }}
+          />
+          </View>
+          <View style={{justifyContent: 'center', alignContent: 'flex-end'}}>
+            <Text style={{fontSize: 24}}>Total: </Text>
+          </View>
+          <View style={{justifyContent: 'center', alignContent: 'flex-end'}}>
+            <Text style={{fontSize: 24}}>{transactionSum.toFixed(2)}</Text>
+          </View>
+        </View>
         <InputControl
           styles={styles}
           refs={{ descriptionRef, amountRef, categoryRef }}
