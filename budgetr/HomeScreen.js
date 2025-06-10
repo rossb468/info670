@@ -1,24 +1,14 @@
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react'
 import styles from './Styles'
 import Item from './Item'
-import { FlatList, SafeAreaView, View, Keyboard, Text, InteractionManager } from 'react-native';
-import uuid from 'react-native-uuid';
-import { fetchTransactions, postTransaction, deleteTransaction } from './API';
+import { FlatList, SafeAreaView, View, Keyboard, Text, InteractionManager } from 'react-native'
+import uuid from 'react-native-uuid'
+import { fetchTransactions, postTransaction, deleteTransaction, updateTransaction } from './API'
 import InputControl from './InputControl'
-import DropDownPicker from 'react-native-dropdown-picker';
+import DropDownPicker from 'react-native-dropdown-picker'
 
 const STORAGE_KEY = 'transactions';
 var lastDate = new Date().toLocaleDateString();
-
-function createDefaultTransaction() {
-  return {
-    id: uuid.v4(),
-    date: lastDate,
-    description: '',
-    amount: '',
-    category: ''
-  }
-}
 
 function sortTransactions(transactions) {
   return transactions.slice().sort((a, b) => {
@@ -27,6 +17,20 @@ function sortTransactions(transactions) {
     const aDate = new Date(aYear, aMonth - 1, aDay);
     const bDate = new Date(bYear, bMonth - 1, bDay);
     return aDate - bDate;
+  });
+}
+
+function filterTransactionsByDateRange(transactions, startDate, endDate) {
+  if (!Array.isArray(transactions) || !startDate || !endDate) return transactions;
+
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  if (isNaN(start) || isNaN(end)) return transactions;
+
+  return transactions.filter(t => {
+    const [m, d, y] = t.date.split('/').map(Number);
+    const tDate = new Date(y, m - 1, d);
+    return tDate >= start && tDate <= end;
   });
 }
 
@@ -88,18 +92,25 @@ async function handleDelete(transaction, setTransactions) {
   }
 }
 
-function filterTransactionsByDateRange(transactions, startDate, endDate) {
-  if (!Array.isArray(transactions) || !startDate || !endDate) return transactions;
-
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  if (isNaN(start) || isNaN(end)) return transactions;
-
-  return transactions.filter(t => {
-    const [m, d, y] = t.date.split('/').map(Number);
-    const tDate = new Date(y, m - 1, d);
-    return tDate >= start && tDate <= end;
+async function handleUpdate(updatedTransaction, setTransactions) {
+  console.log("Entered handleUpdate");
+    Object.entries(updatedTransaction).forEach(([key, value]) => {
+    console.log(`${key}: ${typeof value}`);
   });
+  try {
+    console.log("Trying call");
+    console.log(updatedTransaction);
+    const response = await updateTransaction(updatedTransaction);
+    console.log("Call complete");
+
+    if (response.status === 200) {
+      setTransactions(prev => prev.map(t => t.id === updatedTransaction.id ? updatedTransaction : t));
+    } else {
+      console.error("Server error:", response.message || "Unknown error");
+    }
+  } catch (error) {
+    console.error("Failed to update transaction:", error);
+  }
 }
   
 export default function HomeScreen() {
@@ -210,7 +221,11 @@ export default function HomeScreen() {
     handleDelete(transaction, setTransactions);
   }
 
-  function applyDateFilter(range, allTransactions) {
+  const handleUpdateExposed = (transaction) => {
+    handleUpdate(transaction, setTransactions);
+  }
+
+  function getDateFilteredTransactions(range, allTransactions) {
     const now = new Date();
     let startDate = null;
 
@@ -238,8 +253,17 @@ export default function HomeScreen() {
         break;
     }
 
-    const filtered = startDate ? filterTransactionsByDateRange(allTransactions, startDate, now) : allTransactions;
-    setFilteredTransactions(filtered);
+    return startDate ? filterTransactionsByDateRange(allTransactions, startDate, now) : allTransactions;
+  }
+
+  function getCategoryFilteredTransactions(category, transactions) {
+    return category === 'all'
+      ? transactions
+      : transactions.filter(t => t.category === category);
+  }
+
+  useEffect(() => {
+    var filtered = getDateFilteredTransactions(datePickerRange, transactions);
 
     // Convert to set to uniquify list
     const uniqueCategories = Array.from(new Set(filtered.map(t => t.category))).sort();
@@ -253,29 +277,9 @@ export default function HomeScreen() {
       setTransactionSum(sum);
     }
 
-    return filtered;
-  }
-
-  function applyCategoryFilter(category, transactions) {
-    const filtered = category === 'all'
-      ? transactions
-      : transactions.filter(t => t.category === category);
+    filtered = getCategoryFilteredTransactions(categoryPickerRange, filtered);
 
     setFilteredTransactions(filtered);
-
-    if(filtered && filtered.length > 0) {
-      const sum = filtered.reduce((accumulator, t) => {
-      const parsedAmount = parseFloat(t.amount);
-      return accumulator + (isNaN(parsedAmount) ? 0 : parsedAmount); 
-      }, 0)
-      setTransactionSum(sum);
-    }
-  }
-
-
-  useEffect(() => {
-    var filtered = applyDateFilter(datePickerRange, transactions);
-    filtered = applyCategoryFilter(categoryPickerRange, filtered);
   }, [datePickerRange, categoryPickerRange, transactions]);
 
   return (
@@ -285,7 +289,7 @@ export default function HomeScreen() {
         style={styles.mainList}
         data={filteredTransactions}
         keyExtractor={item => item.id}
-        renderItem={({item}) => <Item item={item} deleteHandler={handleDeleteExposed} />}
+        renderItem={({item}) => <Item item={item} deleteHandler={handleDeleteExposed} updateHandler={handleUpdateExposed} />}
         stickyHeaderIndices={[0]}
         ListHeaderComponent={() => (
           <View style={styles.itemRow}>

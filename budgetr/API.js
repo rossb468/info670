@@ -46,3 +46,26 @@ export async function deleteTransaction(id) {
 
   return response;
 }
+
+
+export async function updateTransaction(transaction) {
+  const result = null;
+  try {
+    const response = await fetch(`${API_URL}/updateTransaction.php`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(transaction)
+    });
+
+    result = await response.json();
+  }
+  catch(error) {
+    console.error("Error in updateTransaction:", error);
+  }
+
+  if (result.status !== 'success') {
+    throw new Error(result.message || 'Failed to update transaction');
+  }
+
+  return response;
+}
