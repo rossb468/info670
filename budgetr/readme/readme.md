@@ -16,7 +16,7 @@ Click 'Delete' to delete the transaction, or 'Cancel' to abort.
 
 The following images show the flow of entering and then deleting a transaction.
 
-<img src="screenshot1.png" width="22%"">
+<img src="screenshot1.png" width="22%">
 <img src="screenshot2.png" width="22%">
 <img src="screenshot3.png" width="22%">
 <img src="screenshot4.png" width="22%">
