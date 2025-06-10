@@ -5,6 +5,7 @@ import { FlatList, SafeAreaView, View, Keyboard, Text, InteractionManager } from
 import uuid from 'react-native-uuid';
 import { fetchTransactions, postTransaction, deleteTransaction } from './API';
 import InputControl from './InputControl'
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const STORAGE_KEY = 'transactions';
 var lastDate = new Date().toLocaleDateString();
@@ -115,9 +116,20 @@ export default function HomeScreen() {
   const categoryRef = useRef();
   const flatListRef = useRef();
 
+  const [pickerRange, setRange] = useState('all');
+  const [pickerOpen, setOpen] = useState(false);
+  const [pickerItems, setItems] = useState([
+    { label: 'All', value: 'all' },
+    { label: 'Last 7 days', value: '7days' },
+    { label: 'Last 30 days', value: '30days' },
+    { label: 'Current Week', value: 'week' },
+    { label: 'Current Month', value: 'month' },
+  ]);
+
+
   useEffect(() => {
     loadData().then(data => {
-      setTransactions(data);
+      setTransactions(sortTransactions(data));
 
       InteractionManager.runAfterInteractions(() => {
         if (descriptionRef.current) {
@@ -220,17 +232,24 @@ export default function HomeScreen() {
           </View>
         )}
       />
-      <InputControl 
-        styles={styles} 
-        refs={{descriptionRef, amountRef, categoryRef}}
-        values={{
-          date,
-          description,
-          amount,
-          category,
-        }}
-        onChange={handleInputChange}
-        onSubmit={submitTransaction} />
+      <View style={{ paddingHorizontal: 10, paddingVertical: 20, marginTop: 'auto' }}>
+        <DropDownPicker
+          open={pickerOpen}
+          value={pickerRange}
+          items={pickerItems}
+          setOpen={setOpen}
+          setValue={setRange}
+          setItems={setItems}
+          style={{ marginBottom: 10 }}
+        />
+        <InputControl
+          styles={styles}
+          refs={{ descriptionRef, amountRef, categoryRef }}
+          values={{ date, description, amount, category }}
+          onChange={handleInputChange}
+          onSubmit={submitTransaction}
+        />
+      </View>
     </SafeAreaView>
   )
 }
