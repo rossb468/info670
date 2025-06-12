@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, Image, Alert, TextInput } from 'react-native';
 import styles from './Styles'
-import EditableField from './EditableField';
+import EditableTextField from './EditableTextField';
 
 export default function Item ({ item, deleteHandler, updateHandler }) {
 
@@ -22,7 +22,7 @@ export default function Item ({ item, deleteHandler, updateHandler }) {
         style={() => [
           styles.rowItem,
         ]}>
-        <EditableField
+        <EditableTextField
           fieldKey="date"
           value={item.date}
           onSave={(key, val) => { 
@@ -31,7 +31,7 @@ export default function Item ({ item, deleteHandler, updateHandler }) {
           }}
           style={styles.itemTextStyle}
         />
-        <EditableField
+        <EditableTextField
           fieldKey="description"
           value={item.description}
           onSave={(key, val) => { item[key] = val; 
@@ -39,7 +39,7 @@ export default function Item ({ item, deleteHandler, updateHandler }) {
           }}
           style={[styles.itemTextStyle, {flex: 1}]}
         />
-        <EditableField
+        <EditableTextField
           fieldKey="category"
           value={item.category}
           onSave={(key, val) => { item[key] = val; 
@@ -47,7 +47,7 @@ export default function Item ({ item, deleteHandler, updateHandler }) {
           }}
           style={styles.itemTextStyle}
         />
-        <EditableField
+        <EditableTextField
           fieldKey="amount"
           value={item.amount}
           onSave={(key, val) => { item[key] = val; 

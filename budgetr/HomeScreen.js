@@ -158,6 +158,12 @@ export default function HomeScreen() {
     });
   }, []);
 
+  useEffect(() => {
+    if (flatListRef.current) {
+      flatListRef.current.scrollToEnd({ animated: true });
+    }
+  }, [filteredTransactions]);
+
   const createTransactionFromInput = () => {
     if (!date.trim() || !description.trim() ||!amount.trim() ||!category.trim()) 
     {
@@ -179,10 +185,6 @@ export default function HomeScreen() {
       handleSubmit(transaction, setTransactions).then(() => {
         const updatedTransactions = sortTransactions([transaction, ...transactions]);
         setTransactions(updatedTransactions);
-
-        if (flatListRef.current) {
-          flatListRef.current.scrollToEnd({ animated: true });
-        }
 
         setDate(lastDate);
         setDescription('');
