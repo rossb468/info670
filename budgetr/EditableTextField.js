@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Text, TextInput } from 'react-native';
 
-export default function EditableField({ fieldKey, value, onSave, style, keyboardType }) {
+export default function EditableTextField({ fieldKey, value, onSave, style, keyboardType }) {
   const [editing, setEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
 
