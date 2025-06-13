@@ -270,18 +270,18 @@ export default function HomeScreen() {
     // Convert to set to uniquify list
     const uniqueCategories = Array.from(new Set(filtered.map(t => t.category))).sort();
     setCategoryPickerItems([{ label: 'All', value: 'all' }, ...uniqueCategories.map(cat => ({ label: cat, value: cat }))]);
-  
+
+    filtered = getCategoryFilteredTransactions(categoryPickerRange, filtered);
+    setFilteredTransactions(filtered);
+
     if(filtered && filtered.length > 0) {
       const sum = filtered.reduce((accumulator, t) => {
-      const parsedAmount = parseFloat(t.amount);
-      return accumulator + (isNaN(parsedAmount) ? 0 : parsedAmount); 
-      }, 0)
+        const parsedAmount = parseFloat(t.amount);
+        return accumulator + (isNaN(parsedAmount) ? 0 : parsedAmount); 
+        }, 0)
       setTransactionSum(sum);
     }
 
-    filtered = getCategoryFilteredTransactions(categoryPickerRange, filtered);
-
-    setFilteredTransactions(filtered);
   }, [datePickerRange, categoryPickerRange, transactions]);
 
   return (
